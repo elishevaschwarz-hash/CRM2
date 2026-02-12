@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM - ניהול לקוחות</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ─── Chat Sidebar (Left Side) ────────────────────────────────────── -->
+    <aside id="chat-sidebar" class="chat-sidebar">
+        <div class="chat-header">
+            <h3>🤖 עוזר חכם</h3>
+        </div>
+        <div id="chat-messages" class="chat-messages">
+            <div class="chat-bubble assistant">
+                שלום! אני העוזר החכם שלך. שאל אותי כל שאלה על הלקוחות והאינטראקציות שלך.
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="שאל שאלה על הנתונים..." autocomplete="off">
+            <button id="chat-send-btn" title="שלח">➤</button>
+        </div>
+    </aside>
+
+    <!-- ─── Mobile Chat Toggle ──────────────────────────────────────────── -->
+    <button id="chat-toggle-btn" class="chat-toggle-btn" title="צ'אט">💬</button>
+
+    <!-- ─── Main Content ────────────────────────────────────────────────── -->
+    <main id="main-content" class="main-content">
+
+        <!-- ═══ View 1: Dashboard ═══════════════════════════════════════ -->
+        <section id="dashboard-view">
+            <header class="view-header">
+                <h1>לוח בקרה</h1>
+            </header>
+
+            <!-- Stats Cards -->
+            <div id="stats-cards" class="stats-grid">
+                <div class="stat-card stat-active">
+                    <div class="stat-number" id="stat-active">0</div>
+                    <div class="stat-label">לקוחות פעילים</div>
+                </div>
+                <div class="stat-card stat-lead">
+                    <div class="stat-number" id="stat-leads">0</div>
+                    <div class="stat-label">לידים פתוחים</div>
+                </div>
+                <div class="stat-card stat-followup">
+                    <div class="stat-number" id="stat-followup">0</div>
+                    <div class="stat-label">דורשים מעקב היום</div>
+                </div>
+            </div>
+
+            <!-- Search & Filter -->
+            <div class="search-filter-bar">
+                <input type="text" id="search-input" placeholder="🔍 חיפוש לפי שם או חברה..." autocomplete="off">
+                <div class="filter-pills">
+                    <button class="filter-pill active" data-status="">הכל</button>
+                    <button class="filter-pill" data-status="ליד">ליד</button>
+                    <button class="filter-pill" data-status="לקוח פעיל">לקוח פעיל</button>
+                    <button class="filter-pill" data-status="לא פעיל">לא פעיל</button>
+                </div>
+            </div>
+
+            <!-- Contacts Table -->
+            <div class="table-container">
+                <table id="contacts-table">
+                    <thead>
+                        <tr>
+                            <th>שם</th>
+                            <th>חברה</th>
+                            <th>סטטוס</th>
+                            <th>אינטראקציה אחרונה</th>
+                            <th>הצעד הבא</th>
+                            <th>תאריך מעקב</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contacts-tbody">
+                        <!-- Rows injected by JS -->
+                    </tbody>
+                </table>
+                <div id="table-empty" class="table-empty" style="display:none;">
+                    <p>לא נמצאו אנשי קשר</p>
+                </div>
+                <div id="table-loading" class="table-loading" style="display:none;">
+                    <div class="spinner"></div>
+                    <p>טוען...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ View 2: Contact Detail ══════════════════════════════════ -->
+        <section id="contact-view" style="display:none;">
+            <header class="view-header">
+                <button id="back-btn" class="btn-back">← חזרה לרשימה</button>
+            </header>
+
+            <!-- Contact Info Card -->
+            <div id="contact-card" class="contact-card">
+                <div class="contact-card-header">
+                    <h1 id="contact-name"></h1>
+                    <button id="delete-contact-btn" class="btn-icon-danger" title="מחק איש קשר">🗑️</button>
+                </div>
+                <div class="contact-details-grid">
+                    <div class="detail-item">
+                        <label>חברה</label>
+                        <span id="contact-company">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>אימייל</label>
+                        <a id="contact-email" href="#">—</a>
+                    </div>
+                    <div class="detail-item">
+                        <label>טלפון</label>
+                        <a id="contact-phone" href="#">—</a>
+                    </div>
+                    <div class="detail-item">
+                        <label>סטטוס</label>
+                        <select id="contact-status-select" class="status-select">
+                            <option value="ליד">ליד</option>
+                            <option value="לקוח פעיל">לקוח פעיל</option>
+                            <option value="לא פעיל">לא פעיל</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactions Timeline -->
+            <div class="timeline-section">
+                <div class="timeline-header">
+                    <h2>אינטראקציות</h2>
+                    <button id="add-interaction-btn" class="btn-primary btn-sm">+ אינטראקציה חדשה</button>
+                </div>
+                <div id="interaction-timeline" class="timeline">
+                    <!-- Timeline items injected by JS -->
+                </div>
+                <div id="timeline-empty" class="timeline-empty" style="display:none;">
+                    <p>אין אינטראקציות עדיין. לחץ על "אינטראקציה חדשה" כדי להתחיל.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ─── Floating Action Button ──────────────────────────────────────── -->
+    <button id="fab" class="fab" title="הוסף איש קשר חדש">+</button>
+
+    <!-- ─── Add Contact Modal ───────────────────────────────────────────── -->
+    <div id="add-contact-modal" class="modal-overlay" style="display:none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>איש קשר חדש</h2>
+                <button class="modal-close" data-modal="add-contact-modal">&times;</button>
+            </div>
+            <form id="add-contact-form">
+                <div class="form-group">
+                    <label for="contact-form-name">שם *</label>
+                    <input type="text" id="contact-form-name" name="name" required placeholder="שם מלא">
+                </div>
+                <div class="form-group">
+                    <label for="contact-form-email">אימייל</label>
+                    <input type="email" id="contact-form-email" name="email" placeholder="email@example.com" dir="ltr">
+                </div>
+                <div class="form-group">
+                    <label for="contact-form-phone">טלפון</label>
+                    <input type="tel" id="contact-form-phone" name="phone" placeholder="050-1234567" dir="ltr">
+                </div>
+                <div class="form-group">
+                    <label for="contact-form-company">חברה</label>
+                    <input type="text" id="contact-form-company" name="company" placeholder="שם החברה">
+                </div>
+                <div class="form-group">
+                    <label for="contact-form-status">סטטוס</label>
+                    <select id="contact-form-status" name="status">
+                        <option value="ליד">ליד</option>
+                        <option value="לקוח פעיל">לקוח פעיל</option>
+                        <option value="לא פעיל">לא פעיל</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary btn-full">שמור</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ─── Add Interaction Modal ───────────────────────────────────────── -->
+    <div id="add-interaction-modal" class="modal-overlay" style="display:none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>אינטראקציה חדשה</h2>
+                <button class="modal-close" data-modal="add-interaction-modal">&times;</button>
+            </div>
+            <form id="add-interaction-form">
+                <input type="hidden" id="interaction-contact-id" name="contact_id">
+                <div class="form-group">
+                    <label for="interaction-form-type">סוג *</label>
+                    <select id="interaction-form-type" name="type" required>
+                        <option value="שיחה">📞 שיחה</option>
+                        <option value="מייל">📧 מייל</option>
+                        <option value="פגישה">🤝 פגישה</option>
+                        <option value="הערה">📝 הערה</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="interaction-form-summary">תקציר *</label>
+                    <textarea id="interaction-form-summary" name="summary" required rows="3" placeholder="תאר את האינטראקציה..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="interaction-form-next-action">הצעד הבא</label>
+                    <input type="text" id="interaction-form-next-action" name="next_action" placeholder="מה צריך לעשות?">
+                </div>
+                <div class="form-group">
+                    <label for="interaction-form-next-date">תאריך מעקב</label>
+                    <input type="date" id="interaction-form-next-date" name="next_action_date" dir="ltr">
+                </div>
+                <button type="submit" class="btn-primary btn-full">שמור</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ─── Toast Container ─────────────────────────────────────────────── -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- ─── Scripts ─────────────────────────────────────────────────────── -->
+    <script src="app.js"></script>
+    <script src="chat.js"></script>
+</body>
+</html>
