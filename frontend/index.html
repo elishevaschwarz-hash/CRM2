@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRM - ניהול לקוחות</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 
@@ -17,6 +17,25 @@
         <div id="chat-messages" class="chat-messages">
             <div class="chat-bubble assistant">
                 שלום! אני העוזר החכם שלך. שאל אותי כל שאלה על הלקוחות והאינטראקציות שלך.
+            </div>
+        </div>
+        <div class="chat-api-key-area" id="api-key-area">
+            <div class="api-key-banner" id="api-key-banner">
+                <span>לשימוש בעוזר, הכנס מפתח OpenAI</span>
+                <button type="button" id="api-key-toggle-banner" class="api-key-expand-btn">הגדר מפתח</button>
+            </div>
+            <div class="api-key-form" id="api-key-form" style="display:none;">
+                <div class="api-key-input-row">
+                    <input type="password" id="chat-api-key" placeholder="sk-proj-..." dir="ltr" autocomplete="off" spellcheck="false">
+                    <button type="button" id="toggle-api-key" class="api-key-eye-btn" title="הצג/הסתר">
+                        <span id="eye-icon">&#128065;</span>
+                    </button>
+                </div>
+                <button type="button" id="api-key-save-btn" class="api-key-save-btn">שמור</button>
+            </div>
+            <div class="api-key-saved" id="api-key-saved" style="display:none;">
+                <span>&#9989; מפתח הוגדר</span>
+                <button type="button" id="api-key-change-btn" class="api-key-change-btn">שנה</button>
             </div>
         </div>
         <div class="chat-input-area">
@@ -222,7 +241,7 @@
     <div id="toast-container" class="toast-container"></div>
 
     <!-- ─── Scripts ─────────────────────────────────────────────────────── -->
-    <script src="app.js"></script>
-    <script src="chat.js"></script>
+    <script src="app.js?v=2"></script>
+    <script src="chat.js?v=2"></script>
 </body>
 </html>

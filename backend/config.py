@@ -9,7 +9,6 @@ load_dotenv(dotenv_path=env_path)
 
 SUPABASE_URL = os.environ["SUPABASE_URL"]
 SUPABASE_KEY = os.environ["SUPABASE_KEY"]
-OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
 
 # Supabase client singleton
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
