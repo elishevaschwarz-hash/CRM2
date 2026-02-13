@@ -3,9 +3,84 @@
     const chatMessages = document.getElementById('chat-messages');
     const chatInput = document.getElementById('chat-input');
     const chatSendBtn = document.getElementById('chat-send-btn');
+    const chatApiKeyInput = document.getElementById('chat-api-key');
+
+    // API key UI elements
+    const apiKeyBanner = document.getElementById('api-key-banner');
+    const apiKeyForm = document.getElementById('api-key-form');
+    const apiKeySaved = document.getElementById('api-key-saved');
+    const apiKeyToggleBanner = document.getElementById('api-key-toggle-banner');
+    const apiKeySaveBtn = document.getElementById('api-key-save-btn');
+    const apiKeyChangeBtn = document.getElementById('api-key-change-btn');
+    const toggleApiKeyBtn = document.getElementById('toggle-api-key');
+    const eyeIcon = document.getElementById('eye-icon');
+
+    // Stored API key (in-memory only)
+    let savedApiKey = '';
 
     // Chat history (in-memory, cleared on page refresh)
     const chatHistory = [];
+
+    // ─── API Key UI Logic ───────────────────────────────────────────────────
+
+    function showBanner() {
+        apiKeyBanner.style.display = 'flex';
+        apiKeyForm.style.display = 'none';
+        apiKeySaved.style.display = 'none';
+    }
+
+    function showForm() {
+        apiKeyBanner.style.display = 'none';
+        apiKeyForm.style.display = 'block';
+        apiKeySaved.style.display = 'none';
+        chatApiKeyInput.focus();
+    }
+
+    function showSaved() {
+        apiKeyBanner.style.display = 'none';
+        apiKeyForm.style.display = 'none';
+        apiKeySaved.style.display = 'flex';
+    }
+
+    apiKeyToggleBanner.addEventListener('click', showForm);
+
+    apiKeySaveBtn.addEventListener('click', function () {
+        const key = chatApiKeyInput.value.trim();
+        if (!key) {
+            chatApiKeyInput.style.borderColor = '#dc2626';
+            return;
+        }
+        savedApiKey = key;
+        showSaved();
+    });
+
+    apiKeyChangeBtn.addEventListener('click', function () {
+        chatApiKeyInput.value = savedApiKey;
+        showForm();
+    });
+
+    toggleApiKeyBtn.addEventListener('click', function () {
+        if (chatApiKeyInput.type === 'password') {
+            chatApiKeyInput.type = 'text';
+            eyeIcon.innerHTML = '&#128064;';
+        } else {
+            chatApiKeyInput.type = 'password';
+            eyeIcon.innerHTML = '&#128065;';
+        }
+    });
+
+    chatApiKeyInput.addEventListener('input', function () {
+        chatApiKeyInput.style.borderColor = '';
+    });
+
+    chatApiKeyInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            apiKeySaveBtn.click();
+        }
+    });
+
+    // ─── Chat Bubbles ───────────────────────────────────────────────────────
 
     function appendBubble(text, className) {
         const bubble = document.createElement('div');
@@ -25,9 +100,17 @@
         return bubble;
     }
 
+    // ─── Send Message ───────────────────────────────────────────────────────
+
     async function sendMessage() {
         const text = chatInput.value.trim();
         if (!text) return;
+
+        if (!savedApiKey) {
+            appendBubble('יש להגדיר OpenAI API Key לפני השימוש בעוזר.', 'assistant error');
+            showForm();
+            return;
+        }
 
         // Add user message
         appendBubble(text, 'user');
@@ -42,20 +125,15 @@
             const res = await fetch(`${API_BASE_URL}/api/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: text }),
+                body: JSON.stringify({ message: text, api_key: savedApiKey }),
             });
-
-            if (!res.ok) {
-                throw new Error(`HTTP ${res.status}`);
-            }
 
             const data = await res.json();
             typingBubble.remove();
 
-            if (data.error) {
-                appendBubble('שגיאה: ' + data.error, 'assistant error');
+            if (!res.ok || data.error) {
+                appendBubble('שגיאה: ' + (data.error || `HTTP ${res.status}`), 'assistant error');
             } else {
-                // Process reply - make contact names clickable if they appear in the text
                 const reply = data.reply;
                 const processedHtml = makeContactNamesClickable(reply);
                 appendBubbleHtml(processedHtml, 'assistant');
@@ -67,8 +145,9 @@
         }
     }
 
+    // ─── Helpers ─────────────────────────────────────────────────────────────
+
     function makeContactNamesClickable(text) {
-        // Check if any known contact names appear in the AI response
         if (typeof allContacts === 'undefined' || !allContacts.length) {
             return escapeHtmlChat(text);
         }
@@ -102,7 +181,6 @@
             e.preventDefault();
             const contactId = link.dataset.contactId;
             if (contactId && typeof showContactDetail === 'function') {
-                // Close sidebar on mobile
                 document.getElementById('chat-sidebar').classList.remove('open');
                 showContactDetail(contactId);
             }

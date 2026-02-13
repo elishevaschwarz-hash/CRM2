@@ -3,12 +3,10 @@ import datetime
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from openai import OpenAI
-from config import supabase, OPENAI_API_KEY
+from config import supabase
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
-
-openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
 # ─── Health Check ────────────────────────────────────────────────────────────
 
@@ -273,6 +271,11 @@ def chat():
             return jsonify({"error": "message is required"}), 400
 
         user_message = data["message"]
+        api_key = data.get("api_key")
+        if not api_key:
+            return jsonify({"error": "יש להזין OpenAI API Key"}), 400
+
+        openai_client = OpenAI(api_key=api_key)
         today = datetime.date.today().isoformat()
 
         # Step 1: Convert natural language to query plan
