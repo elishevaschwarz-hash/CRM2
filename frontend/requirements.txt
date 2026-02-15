@@ -1,0 +1,2 @@
+# Frontend static file server dependencies
+# This is minimal - just serve static HTML/CSS/JS via Python's http.server
