@@ -4,6 +4,8 @@ WORKDIR /app
 
 COPY . .
 
+RUN chmod +x entrypoint.sh
+
 EXPOSE 8080
 
-CMD ["python", "-m", "http.server", "8080"]
+CMD ["./entrypoint.sh"]

@@ -12,3 +12,6 @@ venv/
 
 # Claude
 .claude/
+
+# Runtime generated
+runtime-config.js
