@@ -7,8 +7,8 @@ on:
 
 env:
   REGISTRY: docker.io
-  BACKEND_IMAGE: ${{ secrets.DOCKER_USERNAME }}/crm1-backend
-  FRONTEND_IMAGE: ${{ secrets.DOCKER_USERNAME }}/crm1-frontend
+  BACKEND_IMAGE: elishevazur/crm1-backend
+  FRONTEND_IMAGE: elishevazur/crm1-frontend
 
 jobs:
   build-and-push:
