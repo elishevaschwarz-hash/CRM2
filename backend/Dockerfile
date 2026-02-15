@@ -8,6 +8,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 ENV FLASK_ENV=production
+ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8080
 
